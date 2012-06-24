@@ -7,6 +7,16 @@ if Meteor.is_client
     shapes.each (shape) ->
       Shapes.remove shape._id
 
+  iPadCreateShape = (e) ->
+    canvasOffset = $('canvas').offset()
+
+    touchX = e.changedTouches[0].clientX - canvasOffset.left
+    touchY = e.changedTouches[0].clientY - canvasOffset.top
+
+    Shapes.insert
+      color: Session.get('current_color')
+      coords: [touchX, touchY, 8, 8]
+
   createShape = (e) ->
     Shapes.insert
       color: Session.get('current_color')
@@ -45,10 +55,13 @@ if Meteor.is_client
       Session.set('current_color', $(e.currentTarget).css('background-color'))
 
   Template.canvas.events =
-    'mousedown, touchstart': ->
+    'mousedown': ->
       Session.set 'mousedown', true
 
-    'mousemove, touchmove': (e) ->
+    'touchstart': ->
+      Session.set 'mousedown', true
+
+    'mousemove': (e) ->
       return unless Session.get('mousedown')
 
       e.preventDefault()
@@ -57,15 +70,35 @@ if Meteor.is_client
 
       drawShapes()
 
-    'mouseup, touchend': ->
+    'touchmove': (e) ->
+      return unless Session.get('mousedown')
+
+      e.preventDefault()
+
+      iPadCreateShape(e)
+
+      drawShapes()
+
+    'mouseup': ->
       Session.set 'mousedown', false
 
-    'click, touchstart canvas': (e) ->
+    'touchend': ->
+      Session.set 'mousedown', false
+
+    'click canvas': (e) ->
       createShape(e)
 
       drawShapes()
 
-    'click, touchstart .clear': ->
+    'touchstart canvas': (e) ->
+      iPadCreateShape(e)
+
+      drawShapes()
+
+    'click .clear': ->
+      clear()
+
+    'touchstart clear': ->
       clear()
 
 if Meteor.is_server
