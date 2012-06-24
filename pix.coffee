@@ -7,20 +7,16 @@ if Meteor.is_client
     shapes.each (shape) ->
       Shapes.remove {}
 
-  iPadCreateShape = (e) ->
+  createShape = (e) ->
     canvasOffset = $('canvas').offset()
 
-    touchX = e.changedTouches[0].clientX - canvasOffset.left
-    touchY = e.changedTouches[0].clientY - canvasOffset.top
+    x = e.offsetX || (e.changedTouches[0].clientX - canvasOffset.left)
+    y = e.offsetY || (e.changedTouches[0].clientY - canvasOffset.top)
 
     Shapes.insert
       color: Session.get('current_color')
-      coords: [touchX, touchY, 8, 8]
-
-  createShape = (e) ->
-    Shapes.insert
-      color: Session.get('current_color')
-      coords: [e.offsetX, e.offsetY, 8, 8]
+      shape: Session.get('tool')
+      coords: [x, y, 8, 8]
 
   drawShapes = ->
     canvas = $('canvas')
@@ -32,9 +28,17 @@ if Meteor.is_client
     Shapes.find().fetch().each (shape) ->
       context.fillStyle = shape.color
 
-      [x, y, width, height] = shape.coords
+      if shape.shape is 'rectangle'
+        [x, y, width, height] = shape.coords
 
-      context.fillRect(x, y, width, height)
+        context.fillRect(x, y, width, height)
+      else if shape.shape is 'circle'
+        [x, y, radius] = shape.coords
+
+        context.beginPath()
+        context.arc(x, y, radius, 0, 2 * Math.PI, true)
+        context.closePath()
+        context.fill()
 
   startUpdateListener = ->
     redrawCanvas = ->
@@ -49,6 +53,13 @@ if Meteor.is_client
     startUpdateListener()
 
     Session.set('current_color', 'black')
+    Session.set('tool', 'rectangle')
+
+  Template.tools.events =
+    'click a': (e) ->
+      e.preventDefault()
+
+      Session.set('tool', $(e.currentTarget).attr('class'))
 
   Template.palette.events =
     'click, touchstart': (e) ->
@@ -75,7 +86,7 @@ if Meteor.is_client
 
       e.preventDefault()
 
-      iPadCreateShape(e)
+      createShape(e)
 
       drawShapes()
 
@@ -91,10 +102,11 @@ if Meteor.is_client
       drawShapes()
 
     'touchstart canvas': (e) ->
-      iPadCreateShape(e)
+      createShape(e)
 
       drawShapes()
 
+  Template.header.events =
     'click .clear': ->
       clear()
 

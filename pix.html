@@ -3,18 +3,21 @@
 </head>
 
 <body>
-  {{> hello}}
+  {{> header}}
 </body>
 
-<template name="hello">
-  <h1>Pix</h1>
+<template name="header">
+  <header>
+    <h1>Pix</h1>
+    <button class='clear'>Clear</button>
+  </header>
   {{> canvas}}
   {{> palette}}
+  {{> tools}}
 </template>
 
 <template name='canvas'>
   <canvas width=480 height=480></canvas>
-  <button class='clear'>Clear</button>
 </template>
 
 <template name='palette'>
@@ -25,5 +28,15 @@
     <span style="background-color:black"></span>
     <span style="background-color:white"></span>
     <span style="background-color:purple"></span>
+    <span style="background-color:orange"></span>
+    <span style="background-color:gray"></span>
+    <span style="background-color:pink"></span>
+  </div>
+</template>
+
+<template name='tools'>
+  <div class='.tools'>
+    <a href='#' class='rectangle'>Rectangle</a>
+    <a href='#' class='circle'>Circle</a>
   </div>
 </template>
