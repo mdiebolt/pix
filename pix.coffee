@@ -1,6 +1,12 @@
 Shapes = new Meteor.Collection 'shapes'
 
 if Meteor.is_client
+  clear = ->
+    shapes = Shapes.find().fetch()
+
+    _.each shapes, (shape) ->
+      Shapes.remove shape._id
+
   drawShapes = ->
     canvas = $('canvas')
     context = canvas.get(0).getContext('2d')
@@ -51,12 +57,15 @@ if Meteor.is_client
     'mouseup': ->
       Session.set 'mousedown', false
 
-    'click': (e) ->
+    'click canvas': (e) ->
       Shapes.insert
         color: Session.get('current_color')
         coords: [e.offsetX, e.offsetY, 3, 3]
 
       drawShapes()
+
+    'click .clear': ->
+      clear()
 
 if Meteor.is_server
   Meteor.startup ->
