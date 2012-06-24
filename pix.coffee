@@ -1,4 +1,5 @@
 Shapes = new Meteor.Collection 'shapes'
+UserSessions = new Meteor.Collection 'userSessions'
 
 if Meteor.is_client
   words = [
@@ -12,8 +13,8 @@ if Meteor.is_client
   ]
 
   Session.set('color', 'black')
-  Session.set('tool', 'rectangle')
-  Session.set('size', 4)
+  Session.set('tool', 'circle')
+  Session.set('size', 10)
   Session.set('word', words.rand())
   Session.set('time', +new Date())
   Session.set('time_remaining', -60.seconds)
@@ -46,7 +47,7 @@ if Meteor.is_client
     context.fillStyle = '#ffffff'
     context.fillRect(0, 0, canvas.attr('width'), canvas.attr('height'))
 
-    Shapes.find().fetch().each (shape) ->
+    Shapes.find().forEach (shape) ->
       context.fillStyle = shape.color
 
       if shape.shape is 'rectangle'
@@ -73,12 +74,20 @@ if Meteor.is_client
   Meteor.startup ->
     startUpdateListener()
 
+    #sessionId = UserSessions.insert
+    #  drawing: false
+
+    #Session.set 'sessionId', sessionId
+
     # TODO pick new word to draw when this runs out
     # and assign a new person as the painter. Only
     # get points by answering correctly
     intervalId = Meteor.setInterval ->
       Session.set 'time_remaining', (+ new Date()) - (Session.get('time') + 60.seconds)
     , 100
+
+  Handlebars.registerHelper 'title', ->
+    'Pixtionary'
 
   Template.instructions.time = ->
     -(Session.get('time_remaining') / 1000).toFixed(1)
@@ -98,13 +107,22 @@ if Meteor.is_client
 
       Session.set('size', target.val())
 
+  Template.tools.toolList = ->
+    output = ''
+
+    ['rectangle', 'circle'].each (tool) ->
+      active = if tool is Session.get('tool') then 'active' else ''
+      output += "<a href='#' class='#{tool} #{active}'>#{tool.capitalize()}</a> "
+
+    output
+
   Template.tools.events =
     'click a': (e) ->
       e.preventDefault()
 
-      Session.set('tool', $(e.currentTarget).attr('class'))
-
       $('.tools a').removeClass('active')
+
+      Session.set('tool', $(e.currentTarget).attr('class'))
 
       $(e.currentTarget).addClass('active')
 
@@ -130,18 +148,28 @@ if Meteor.is_client
     return output
 
   Template.palette.events =
-    'click span': (e) ->
+    'click, touchstart span': (e) ->
+      e.preventDefault()
+
       Session.set('color', $(e.currentTarget).css('background-color'))
 
   Template.canvas.events =
-    'mousedown, touchstart canvas': (e) ->
+    'mousedown canvas': (e) ->
       e.preventDefault()
 
       Session.set 'mousedown', true
 
-    'mousemove, touchmove canvas': (e) ->
+    'touchstart': (e) ->
+      e.preventDefault()
+
+    'mousemove canvas': (e) ->
       return unless Session.get('mousedown')
 
+      createShape(e)
+
+      drawShapes()
+
+    'touchmove': (e) ->
       createShape(e)
 
       drawShapes()
@@ -149,7 +177,7 @@ if Meteor.is_client
     # todo set mousedown session property
     # to false whenever the mouse is let go
     # even if it isn't on top of the canvas
-    'mouseup, touchend canvas': ->
+    'mouseup canvas': ->
       Session.set 'mousedown', false
 
     'click canvas': (e) ->
@@ -161,6 +189,6 @@ if Meteor.is_client
     'click .clear': ->
       clear()
 
-if Meteor.is_server
-  Meteor.startup ->
-    ;
+# if Meteor.is_server
+#   Meteor.startup ->
+#     ;

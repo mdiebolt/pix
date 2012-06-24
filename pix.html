@@ -1,14 +1,17 @@
 <head>
-  <title>Pix</title>
+  <title>Pixtionary</title>
 </head>
 
 <body>
-  {{> header}}
+  <div class='wrapper'>
+    {{> header}}
+  </div>
+  {{> instructions}}
 </body>
 
 <template name="header">
   <header>
-    <h1>Pix</h1>
+    <h1>{{title}}</h1>
     <button class='clear' {{disabled}}>Clear</button>
     {{> tools}}
     {{> size}}
@@ -16,11 +19,10 @@
   {{> canvas}}
   {{> palette}}
   {{> guesses}}
-  {{> instructions}}
 </template>
 
 <template name='canvas'>
-  <canvas width=480 height=480></canvas>
+  <canvas width=480 height=400></canvas>
 </template>
 
 <template name='palette'>
@@ -31,8 +33,7 @@
 
 <template name='tools'>
   <div class='tools'>
-    <a href='#' class='rectangle active'>Rectangle</a>
-    <a href='#' class='circle'>Circle</a>
+    {{{toolList}}}
   </div>
 </template>
 
@@ -40,14 +41,15 @@
   <div class='size'>
     <label>
       <h4>Brush Size ({{brushSize}})</h4>
-      <input type='range' min=1 max=30 value={{brushSize}}>
+      <input class='size_slider' type='range' min=1 max=30 value={{brushSize}}>
     </label>
   </div>
 </template>
 
 <template name='guesses'>
   <div class='guesses'>
-    <input type='text' placeholder='guess the word' />
+    <h2>Type your guess below</h2>
+    <input class='guess' type='text' placeholder='guess the word being drawn' />
   </div>
 </template>
 
