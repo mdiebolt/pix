@@ -41,14 +41,14 @@ if Meteor.is_client
     Session.set('current_color', 'black')
 
   Template.palette.events =
-    'click': (e) ->
+    'click, touchstart': (e) ->
       Session.set('current_color', $(e.currentTarget).css('background-color'))
 
   Template.canvas.events =
-    'mousedown': ->
+    'mousedown, touchstart': ->
       Session.set 'mousedown', true
 
-    'mousemove': (e) ->
+    'mousemove, touchmove': (e) ->
       return unless Session.get('mousedown')
 
       e.preventDefault()
@@ -57,15 +57,15 @@ if Meteor.is_client
 
       drawShapes()
 
-    'mouseup': ->
+    'mouseup, touchend': ->
       Session.set 'mousedown', false
 
-    'click canvas': (e) ->
+    'click, touchstart canvas': (e) ->
       createShape(e)
 
       drawShapes()
 
-    'click .clear': ->
+    'click, touchstart .clear': ->
       clear()
 
 if Meteor.is_server
