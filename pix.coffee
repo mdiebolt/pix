@@ -4,8 +4,13 @@ if Meteor.is_client
   clear = ->
     shapes = Shapes.find().fetch()
 
-    _.each shapes, (shape) ->
+    shapes.each (shape) ->
       Shapes.remove shape._id
+
+  createShape = (e) ->
+    Shapes.insert
+      color: Session.get('current_color')
+      coords: [e.offsetX, e.offsetY, 8, 8]
 
   drawShapes = ->
     canvas = $('canvas')
@@ -14,7 +19,7 @@ if Meteor.is_client
     context.fillStyle = '#ffffff'
     context.fillRect(0, 0, canvas.attr('width'), canvas.attr('height'))
 
-    _.each Shapes.find().fetch(), (shape) ->
+    Shapes.find().fetch().each (shape) ->
       context.fillStyle = shape.color
 
       [x, y, width, height] = shape.coords
@@ -48,9 +53,7 @@ if Meteor.is_client
 
       e.preventDefault()
 
-      Shapes.insert
-        color: Session.get('current_color')
-        coords: [e.offsetX, e.offsetY, 3, 3]
+      createShape(e)
 
       drawShapes()
 
@@ -58,9 +61,7 @@ if Meteor.is_client
       Session.set 'mousedown', false
 
     'click canvas': (e) ->
-      Shapes.insert
-        color: Session.get('current_color')
-        coords: [e.offsetX, e.offsetY, 3, 3]
+      createShape(e)
 
       drawShapes()
 
