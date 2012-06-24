@@ -1,0 +1,28 @@
+<head>
+  <title>Meteor Draw</title>
+</head>
+
+<body>
+  {{> hello}}
+</body>
+
+<template name="hello">
+  <h1>Meteor Draw</h1>
+  {{> canvas}}
+  {{> palette}}
+</template>
+
+<template name='canvas'>
+  <canvas></canvas>
+</template>
+
+<template name='palette'>
+  <div class='palette'>
+    <span style="background-color:red"></span>
+    <span style="background-color:green"></span>
+    <span style="background-color:blue"></span>
+    <span style="background-color:black"></span>
+    <span style="background-color:white"></span>
+    <span style="background-color:purple"></span>
+  </div>
+</template>
