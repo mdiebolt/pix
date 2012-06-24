@@ -2,7 +2,11 @@ Shapes = new Meteor.Collection 'shapes'
 
 if Meteor.is_client
   drawShapes = ->
-    context = $('canvas').get(0).getContext('2d')
+    canvas = $('canvas')
+    context = canvas.get(0).getContext('2d')
+
+    context.fillStyle = '#ffffff'
+    context.fillRect(0, 0, canvas.attr('width'), canvas.attr('height'))
 
     _.each Shapes.find().fetch(), (shape) ->
       context.fillStyle = shape.color
@@ -30,15 +34,27 @@ if Meteor.is_client
       Session.set('current_color', $(e.currentTarget).css('background-color'))
 
   Template.canvas.events =
-    'click': (e) ->
+    'mousedown': ->
+      Session.set 'mousedown', true
+
+    'mousemove': (e) ->
+      return unless Session.get('mousedown')
+
+      e.preventDefault()
+
       Shapes.insert
         color: Session.get('current_color')
         coords: [e.offsetX, e.offsetY, 3, 3]
 
-      context = $(e.currentTarget).get(0).getContext('2d')
+      drawShapes()
 
-      context.fillStyle = '#ffffff'
-      context.fillRect(0, 0, 300, 300)
+    'mouseup': ->
+      Session.set 'mousedown', false
+
+    'click': (e) ->
+      Shapes.insert
+        color: Session.get('current_color')
+        coords: [e.offsetX, e.offsetY, 3, 3]
 
       drawShapes()
 
