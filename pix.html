@@ -10,10 +10,11 @@
   <header>
     <h1>Pix</h1>
     <button class='clear'>Clear</button>
+    {{> tools}}
+    {{> size}}
   </header>
   {{> canvas}}
   {{> palette}}
-  {{> tools}}
 </template>
 
 <template name='canvas'>
@@ -35,8 +36,17 @@
 </template>
 
 <template name='tools'>
-  <div class='.tools'>
+  <div class='tools'>
     <a href='#' class='rectangle'>Rectangle</a>
     <a href='#' class='circle'>Circle</a>
+  </div>
+</template>
+
+<template name='size'>
+  <div class='size'>
+    <label>
+      <h4>Brush Size</h4>
+      <input type='range' min=1 max=30 value=4>
+    </label>
   </div>
 </template>

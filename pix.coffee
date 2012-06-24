@@ -13,10 +13,12 @@ if Meteor.is_client
     x = e.offsetX || (e.changedTouches[0].clientX - canvasOffset.left)
     y = e.offsetY || (e.changedTouches[0].clientY - canvasOffset.top)
 
+    size = Session.get('size')
+
     Shapes.insert
       color: Session.get('current_color')
       shape: Session.get('tool')
-      coords: [x, y, 8, 8]
+      coords: [x, y, size, size]
 
   drawShapes = ->
     canvas = $('canvas')
@@ -54,6 +56,17 @@ if Meteor.is_client
 
     Session.set('current_color', 'black')
     Session.set('tool', 'rectangle')
+    Session.set('size', 4)
+
+  Template.size.events =
+    'change': (e) ->
+      e.preventDefault()
+
+      target = $(e.currentTarget)
+
+      target.prev().text("Brush Size (#{target.val()})")
+
+      Session.set('size', target.val())
 
   Template.tools.events =
     'click a': (e) ->
@@ -61,18 +74,19 @@ if Meteor.is_client
 
       Session.set('tool', $(e.currentTarget).attr('class'))
 
+      $('.tools a').removeClass('active')
+
+      $(e.currentTarget).addClass('active')
+
   Template.palette.events =
     'click, touchstart': (e) ->
       Session.set('current_color', $(e.currentTarget).css('background-color'))
 
   Template.canvas.events =
-    'mousedown': ->
+    'mousedown, touchstart': ->
       Session.set 'mousedown', true
 
-    'touchstart': ->
-      Session.set 'mousedown', true
-
-    'mousemove': (e) ->
+    'mousemove, touchmove': (e) ->
       return unless Session.get('mousedown')
 
       e.preventDefault()
@@ -81,19 +95,7 @@ if Meteor.is_client
 
       drawShapes()
 
-    'touchmove': (e) ->
-      return unless Session.get('mousedown')
-
-      e.preventDefault()
-
-      createShape(e)
-
-      drawShapes()
-
-    'mouseup': ->
-      Session.set 'mousedown', false
-
-    'touchend': ->
+    'mouseup, touchend': ->
       Session.set 'mousedown', false
 
     'click canvas': (e) ->
@@ -101,16 +103,8 @@ if Meteor.is_client
 
       drawShapes()
 
-    'touchstart canvas': (e) ->
-      createShape(e)
-
-      drawShapes()
-
   Template.header.events =
     'click .clear': ->
-      clear()
-
-    'touchstart clear': ->
       clear()
 
 if Meteor.is_server
