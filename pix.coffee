@@ -1,11 +1,25 @@
 Shapes = new Meteor.Collection 'shapes'
 
 if Meteor.is_client
-  clear = ->
-    shapes = Shapes.find().fetch()
+  words = [
+    'Cat'
+    'Dog'
+    'Bunny'
+    'Horse'
+    'Monkey'
+    'Cow'
+    'Chicken'
+  ]
 
-    shapes.each (shape) ->
-      Shapes.remove {}
+  Session.set('color', 'black')
+  Session.set('tool', 'rectangle')
+  Session.set('size', 4)
+  Session.set('word', words.rand())
+  Session.set('time', +new Date())
+  Session.set('time_remaining', -60.seconds)
+
+  clear = ->
+    Shapes.remove {}
 
   createShape = (e) ->
     canvasOffset = $('canvas').offset()
@@ -15,10 +29,15 @@ if Meteor.is_client
 
     size = Session.get('size')
 
+    if Session.get('tool') is 'rectangle'
+      dimensions = [x, y, size, size]
+    else if Session.get('tool') is 'circle'
+      dimensions = [x, y, size / 2]
+
     Shapes.insert
-      color: Session.get('current_color')
+      color: Session.get('color')
       shape: Session.get('tool')
-      coords: [x, y, size, size]
+      coords: dimensions
 
   drawShapes = ->
     canvas = $('canvas')
@@ -38,7 +57,7 @@ if Meteor.is_client
         [x, y, radius] = shape.coords
 
         context.beginPath()
-        context.arc(x, y, radius, 0, 2 * Math.PI, true)
+        context.arc(x, y, radius, 0, 1.turn, true)
         context.closePath()
         context.fill()
 
@@ -54,17 +73,28 @@ if Meteor.is_client
   Meteor.startup ->
     startUpdateListener()
 
-    Session.set('current_color', 'black')
-    Session.set('tool', 'rectangle')
-    Session.set('size', 4)
+    # TODO pick new word to draw when this runs out
+    # and assign a new person as the painter. Only
+    # get points by answering correctly
+    intervalId = Meteor.setInterval ->
+      Session.set 'time_remaining', (+ new Date()) - (Session.get('time') + 60.seconds)
+    , 100
+
+  Template.instructions.time = ->
+    -(Session.get('time_remaining') / 1000).toFixed(1)
+
+  Template.instructions.word = ->
+    Session.get('word')
+
+  Template.header.disabled = ->
+    if Shapes.find().count() > 0 then '' else 'disabled=disabled'
+
+  Template.size.brushSize = ->
+    parseInt(Session.get('size'))
 
   Template.size.events =
     'change': (e) ->
-      e.preventDefault()
-
       target = $(e.currentTarget)
-
-      target.prev().text("Brush Size (#{target.val()})")
 
       Session.set('size', target.val())
 
@@ -78,24 +108,48 @@ if Meteor.is_client
 
       $(e.currentTarget).addClass('active')
 
+  Template.palette.colors = ->
+    output = ""
+
+    [
+      'red'
+      'green'
+      'blue'
+      'black'
+      'white'
+      'purple'
+      'orange'
+      'gray'
+      'pink'
+    ].each (color) ->
+      if Color(Session.get('color')).toHex() is Color(color).toHex()
+        output += "<span class='active' style='background-color:#{Color(color).toHex()}'></span> "
+      else
+        output += "<span style='background-color:#{Color(color).toHex()}'></span> "
+
+    return output
+
   Template.palette.events =
-    'click, touchstart': (e) ->
-      Session.set('current_color', $(e.currentTarget).css('background-color'))
+    'click span': (e) ->
+      Session.set('color', $(e.currentTarget).css('background-color'))
 
   Template.canvas.events =
-    'mousedown, touchstart': ->
+    'mousedown, touchstart canvas': (e) ->
+      e.preventDefault()
+
       Session.set 'mousedown', true
 
-    'mousemove, touchmove': (e) ->
+    'mousemove, touchmove canvas': (e) ->
       return unless Session.get('mousedown')
-
-      e.preventDefault()
 
       createShape(e)
 
       drawShapes()
 
-    'mouseup, touchend': ->
+    # todo set mousedown session property
+    # to false whenever the mouse is let go
+    # even if it isn't on top of the canvas
+    'mouseup, touchend canvas': ->
       Session.set 'mousedown', false
 
     'click canvas': (e) ->

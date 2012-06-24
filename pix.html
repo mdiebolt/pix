@@ -9,12 +9,14 @@
 <template name="header">
   <header>
     <h1>Pix</h1>
-    <button class='clear'>Clear</button>
+    <button class='clear' {{disabled}}>Clear</button>
     {{> tools}}
     {{> size}}
   </header>
   {{> canvas}}
   {{> palette}}
+  {{> guesses}}
+  {{> instructions}}
 </template>
 
 <template name='canvas'>
@@ -23,21 +25,13 @@
 
 <template name='palette'>
   <div class='palette'>
-    <span style="background-color:red"></span>
-    <span style="background-color:green"></span>
-    <span style="background-color:blue"></span>
-    <span style="background-color:black"></span>
-    <span style="background-color:white"></span>
-    <span style="background-color:purple"></span>
-    <span style="background-color:orange"></span>
-    <span style="background-color:gray"></span>
-    <span style="background-color:pink"></span>
+    {{{colors}}}
   </div>
 </template>
 
 <template name='tools'>
   <div class='tools'>
-    <a href='#' class='rectangle'>Rectangle</a>
+    <a href='#' class='rectangle active'>Rectangle</a>
     <a href='#' class='circle'>Circle</a>
   </div>
 </template>
@@ -45,8 +39,21 @@
 <template name='size'>
   <div class='size'>
     <label>
-      <h4>Brush Size</h4>
-      <input type='range' min=1 max=30 value=4>
+      <h4>Brush Size ({{brushSize}})</h4>
+      <input type='range' min=1 max=30 value={{brushSize}}>
     </label>
+  </div>
+</template>
+
+<template name='guesses'>
+  <div class='guesses'>
+    <input type='text' placeholder='guess the word' />
+  </div>
+</template>
+
+<template name='instructions'>
+  <div class='instructions'>
+    <h2>Draw a {{word}}</h2>
+    <span>Time Left: {{time}}</span>
   </div>
 </template>
