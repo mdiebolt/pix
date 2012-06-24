@@ -5,7 +5,7 @@ if Meteor.is_client
     shapes = Shapes.find().fetch()
 
     shapes.each (shape) ->
-      Shapes.remove shape._id
+      Shapes.remove {}
 
   iPadCreateShape = (e) ->
     canvasOffset = $('canvas').offset()
