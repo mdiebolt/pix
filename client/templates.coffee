@@ -57,6 +57,9 @@ if Meteor.is_client
   Handlebars.registerHelper 'title', ->
     'Pixtionary'
 
+  Handlebars.registerHelper 'drawing', ->
+    Meteor.user().drawing
+
   # Template events
   templateEvents =
     canvas:
