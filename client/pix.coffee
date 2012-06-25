@@ -70,6 +70,11 @@ if Meteor.is_client
     redrawCanvas()
 
   Meteor.startup ->
+    $(document).on 'mouseup', (e) ->
+      return if $(e.target).is('canvas')
+
+      Session.set 'mousedown', false
+
     startUpdateListener()
 
     intervalId = Meteor.setInterval ->
