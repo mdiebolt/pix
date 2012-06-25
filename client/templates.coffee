@@ -31,7 +31,7 @@ if Meteor.is_client
       output = ''
 
       Meteor.users.find().forEach (player) ->
-        output += "<p>#{player.name || player.emails.first()}</p>"
+        output += "<div><span>#{player.name || player.emails.first()}</span><span>#{player.score}</span></div>"
 
       output
 
