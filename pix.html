@@ -14,9 +14,7 @@
 <template name="header">
   <header>
     <h1 class='title'>{{title}}</h1>
-    {{#if drawing}}
-      <button class='clear' {{disabled}}>Clear</button>
-    {{/if}}
+    <button class='toggle_draw'>Toggle Draw</button>
     {{> tools}}
     {{> size}}
   </header>
@@ -26,7 +24,7 @@
 </template>
 
 <template name='canvas'>
-  <canvas width=480 height=400></canvas>
+  <canvas width=480 height=400 {{drawingClass}}></canvas>
 </template>
 
 <template name='palette'>

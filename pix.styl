@@ -55,9 +55,12 @@ body
   position: relative
 
 canvas
-  background: white url('/checker.png')
+  background: white
   border: 1px solid rgba(0, 0, 0, 0.3)
-  cursor: crosshair
+
+  &.drawing
+    background: white url('/checker.png')
+    cursor: crosshair
 
 header
   .title

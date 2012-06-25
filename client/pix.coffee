@@ -1,82 +1,91 @@
 Shapes = new Meteor.Collection 'shapes'
-UserSessions = new Meteor.Collection 'userSessions'
 Answers = new Meteor.Collection 'answers'
 
-if Meteor.is_client
-  Session.set('color', 'black')
-  Session.set('tool', 'circle')
-  Session.set('size', 10)
-  Session.set('time', +new Date())
-  Session.set('time_remaining', 60.seconds)
+Shapes.find().observe
+  added: (shape) ->
+    drawShape(shape)
 
-  clear = ->
-    Shapes.remove {}
+Meteor.users.find().observe
+  added: (user) ->
+    # TODO update the user by id
+    name = user.name
 
-  createShape = (e) ->
-    canvasOffset = $('canvas').offset()
+    unless user.score?
+      Meteor.users.update
+        name: name
+        $set:
+          score: 0
 
-    x = e.offsetX || (e.changedTouches[0].clientX - canvasOffset.left)
-    y = e.offsetY || (e.changedTouches[0].clientY - canvasOffset.top)
+    unless user.drawing?
+      Meteor.users.update
+        name: name
+        $set:
+          drawing: false
 
-    size = Session.get('size')
-    halfSize = size / 2
+Session.set('color', 'black')
+Session.set('tool', 'circle')
+Session.set('size', 10)
+Session.set('time', +new Date())
+Session.set('time_remaining', 60.seconds)
 
-    if Session.get('tool') is 'rectangle'
-      dimensions = [x - halfSize, y - halfSize, size, size]
-    else if Session.get('tool') is 'circle'
-      dimensions = [x - size / 4, y - size / 4, size / 2]
+clear = ->
+  Shapes.remove {}
 
-    Shapes.insert
-      color: Session.get('color')
-      shape: Session.get('tool')
-      coords: dimensions
+createShape = (e) ->
+  canvasOffset = $('canvas').offset()
 
-  drawShapes = ->
-    canvas = $('canvas')
-    context = canvas.get(0).getContext('2d')
+  x = e.offsetX || (e.changedTouches[0].clientX - canvasOffset.left)
+  y = e.offsetY || (e.changedTouches[0].clientY - canvasOffset.top)
 
-    Shapes.find().forEach (shape) ->
-      context.fillStyle = shape.color
+  size = Session.get('size')
+  halfSize = size / 2
 
-      if shape.shape is 'rectangle'
-        [x, y, width, height] = shape.coords
+  if Session.get('tool') is 'rectangle'
+    dimensions = [x - halfSize, y - halfSize, size, size]
+  else if Session.get('tool') is 'circle'
+    dimensions = [x - size / 4, y - size / 4, size / 2]
 
-        context.fillRect(x, y, width, height)
-      else if shape.shape is 'circle'
-        [x, y, radius] = shape.coords
+  Shapes.insert
+    color: Session.get('color')
+    shape: Session.get('tool')
+    coords: dimensions
 
-        context.beginPath()
-        context.arc(x, y, radius, 0, 1.turn, true)
-        context.closePath()
-        context.fill()
+drawing = ->
+  if Meteor.user()
+    Meteor.user().drawing
+  else
+    false
 
-  startUpdateListener = ->
-    redrawCanvas = ->
-      context = new Meteor.deps.Context()
-      context.on_invalidate(redrawCanvas)
-      context.run ->
-        drawShapes()
+drawShape = (shape) ->
+  canvas = $('canvas')
+  context = canvas.get(0).getContext('2d')
 
-    redrawCanvas()
+  context.fillStyle = shape.color
 
-  Meteor.startup ->
-    setTimeout ->
-      Session.set('word', Answers.find().fetch().rand().word)
+  if shape.shape is 'rectangle'
+    [x, y, width, height] = shape.coords
 
-      user = Meteor.users.find().fetch().rand()
-      id = user._id
+    context.fillRect(x, y, width, height)
+  else if shape.shape is 'circle'
+    [x, y, radius] = shape.coords
 
-      Meteor.users.update({}, {$set: {drawing: false}})
-      Meteor.users.update({_id: id}, {$set: {drawing: true}})
-    , 2000
+    context.beginPath()
+    context.arc(x, y, radius, 0, 1.turn, true)
+    context.closePath()
+    context.fill()
 
-    $(document).on 'mouseup', (e) ->
-      return if $(e.target).is('canvas')
+Meteor.startup ->
+  Meteor.subscribe 'answers', ->
+    Session.set('word', Answers.find().fetch().rand().word)
 
-      Session.set 'mousedown', false
+  Meteor.subscribe 'shapes', ->
+    Shapes.find()
 
-    startUpdateListener()
+  $(document).on 'mouseup', (e) ->
+    return if $(e.target).is('canvas')
 
-    intervalId = Meteor.setInterval ->
-      Session.set 'time_remaining', Session.get('time') + 60.seconds - (+new Date())
-    , 100
+    Session.set 'mousedown', false
+
+  intervalId = Meteor.setInterval ->
+    Session.set 'time_remaining', Session.get('time') + 60.seconds - (+new Date())
+  , 100
