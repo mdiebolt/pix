@@ -27,6 +27,14 @@ if Meteor.is_client
           output += "<span style='background-color:#{Color(color).toHex()}'></span> "
 
       output
+    'players list': ->
+      output = ''
+
+      Meteor.users.find().forEach (player) ->
+        output += "<p>#{player.name || player.emails.first()}</p>"
+
+      output
+
     'size brushSize': ->
       parseInt(Session.get('size'))
     'tools toolList': ->
