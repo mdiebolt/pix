@@ -58,7 +58,7 @@ if Meteor.is_client
     'Pixtionary'
 
   Handlebars.registerHelper 'drawing', ->
-    Meteor.user().drawing
+    Meteor.user()?.drawing || false
 
   # Template events
   templateEvents =
