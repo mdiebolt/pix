@@ -7,20 +7,10 @@ Shapes.find().observe
 
 Meteor.users.find().observe
   added: (user) ->
-    # TODO update the user by id
-    name = user.name
-
-    unless user.score?
-      Meteor.users.update
-        name: name
-        $set:
-          score: 0
-
-    unless user.drawing?
-      Meteor.users.update
-        name: name
-        $set:
-          drawing: false
+    Meteor.users.update {_id: user._id}
+      $set:
+        drawing: false
+        score: user.score || 1000
 
 Session.set('color', 'black')
 Session.set('tool', 'circle')
@@ -79,7 +69,7 @@ Meteor.startup ->
     Session.set('word', Answers.find().fetch().rand().word)
 
   Meteor.subscribe 'shapes', ->
-    Shapes.find()
+    ;
 
   $(document).on 'mouseup', (e) ->
     return if $(e.target).is('canvas')

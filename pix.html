@@ -14,7 +14,7 @@
 <template name="header">
   <header>
     <h1 class='title'>{{title}}</h1>
-    <button class='toggle_draw'>Toggle Draw</button>
+    {{# unless drawing}}<button class='toggle_draw'>Start Drawing (-50)</button>{{/unless}}
     {{> tools}}
     {{> size}}
   </header>

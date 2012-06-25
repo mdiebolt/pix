@@ -29,14 +29,11 @@ templateHelpers =
       else
         memo += "<span style='background-color:#{Color(color).toHex()}'></span> "
   'players list': ->
-    output = '<table><th>Name</th><th>Score</th>'
+    users = Meteor.users.find().fetch()
 
-    Meteor.users.find().forEach (player) ->
-      output += "<tr><td>#{player.name || player.emails.first()}</td><td>#{player.score}</td></tr>"
-
-    output += '</table>'
-
-    output
+    (users.inject '<table><th>Name</th><th>Points</th>', (memo, player) ->
+      memo += "<tr><td>#{player.name || player.emails.first()}</td><td>#{player.score}</td></tr>"
+    ) + '</table>'
 
   'size brushSize': ->
     parseInt(Session.get('size'))
@@ -97,9 +94,12 @@ templateEvents =
       createShape(e)
   header:
     'click .toggle_draw': ->
+      return unless (user = Meteor.user())
+
       Meteor.users.update {}
         $set:
-          drawing: not Meteor.user().drawing
+          drawing: if user then true else false
+          score: user.score - 50
 
     'click .clear': ->
       clear()
