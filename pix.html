@@ -28,31 +28,39 @@
 </template>
 
 <template name='palette'>
-  <div class='palette'>
-    {{{colors}}}
-  </div>
+  {{#if currentUser.drawing}}
+    <div class='palette'>
+      {{{colors}}}
+    </div>
+  {{/if}}
 </template>
 
 <template name='tools'>
-  <div class='tools'>
-    {{{toolList}}}
-  </div>
+  {{#if currentUser.drawing}}
+    <div class='tools'>
+      {{{toolList}}}
+    </div>
+  {{/if}}
 </template>
 
 <template name='size'>
-  <div class='size'>
-    <label>
-      <h4>Brush Size ({{brushSize}})</h4>
-      <input class='size_slider' type='range' min=1 max=30 value={{brushSize}} />
-    </label>
-  </div>
+  {{#if currentUser.drawing}}
+    <div class='size'>
+      <label>
+        <h4>Brush Size ({{brushSize}})</h4>
+        <input class='size_slider' type='range' min=1 max=30 value={{brushSize}} />
+      </label>
+    </div>
+  {{/if}}
 </template>
 
 <template name='guesses'>
-  <div class='guesses'>
-    <h2>Type your guess below</h2>
-    <input class='guess' type='text' placeholder='guess the word being drawn' />
-  </div>
+  {{#unless currentUser.drawing}}
+    <div class='guesses'>
+      <h2>Type your guess below</h2>
+      <input class='guess' type='text' placeholder='guess the word being drawn' />
+    </div>
+  {{/if}}
 </template>
 
 <template name='instructions'>
