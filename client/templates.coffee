@@ -4,7 +4,7 @@ if Meteor.is_client
     'header disabled': ->
       if Shapes.find().count() > 0 then '' else 'disabled=disabled'
     'instructions time': ->
-      -(Session.get('time_remaining') / 1000).toFixed(1)
+      (Session.get('time_remaining') / 1000).toFixed(1)
     'instructions word': ->
       Session.get 'word'
     'palette colors': ->
@@ -58,7 +58,10 @@ if Meteor.is_client
     'Pixtionary'
 
   Handlebars.registerHelper 'drawing', ->
-    Meteor.user()?.drawing || false
+    if Meteor.user()?.drawing?
+      Meteor.user().drawing
+    else
+      false
 
   # Template events
   templateEvents =

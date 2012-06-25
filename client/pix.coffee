@@ -7,7 +7,7 @@ if Meteor.is_client
   Session.set('tool', 'circle')
   Session.set('size', 10)
   Session.set('time', +new Date())
-  Session.set('time_remaining', -60.seconds)
+  Session.set('time_remaining', 60.seconds)
 
   clear = ->
     Shapes.remove {}
@@ -78,5 +78,5 @@ if Meteor.is_client
     startUpdateListener()
 
     intervalId = Meteor.setInterval ->
-      Session.set 'time_remaining', (+ new Date()) - (Session.get('time') + 60.seconds)
+      Session.set 'time_remaining', Session.get('time') + 60.seconds - (+new Date())
     , 100
