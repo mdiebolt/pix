@@ -62,6 +62,12 @@ if Meteor.is_client
   Meteor.startup ->
     setTimeout ->
       Session.set('word', Answers.find().fetch().rand().word)
+
+      user = Meteor.users.find().fetch().rand()
+      id = user._id
+
+      Meteor.users.update({}, {$set: {drawing: false}})
+      Meteor.users.update({_id: id}, {$set: {drawing: true}})
     , 2000
 
     $(document).on 'mouseup', (e) ->
