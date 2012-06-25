@@ -11,7 +11,7 @@ html
 
 body
   background-color: #aaa
-  background-image: url('/pattern.png')
+  background-image: url('pattern.png')
   margin: auto
   width: $width
   height: 100%
@@ -43,10 +43,12 @@ header
   display: inline-block
   width: 48px
   height: 48px
+  opacity: 0.3
 
   &.active
     box-shadow: rgba(0, 0, 0, 0.8) 0 0 10px
-    background-image: url('/stripe.png')
+    background-image: url('stripe.png')
+    opacity: 1
 
 .tools, .size
   display: inline-block
