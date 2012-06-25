@@ -28,10 +28,12 @@ if Meteor.is_client
 
       output
     'players list': ->
-      output = ''
+      output = '<table><th>Player</th><th>Score</th>'
 
       Meteor.users.find().forEach (player) ->
-        output += "<div><span>#{player.name || player.emails.first()}</span><span>#{player.score}</span></div>"
+        output += "<tr><td>#{player.name || player.emails.first()}</td><td>#{player.score}</td></tr>"
+
+      output += '</table>'
 
       output
 

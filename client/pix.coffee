@@ -72,14 +72,6 @@ if Meteor.is_client
   Meteor.startup ->
     startUpdateListener()
 
-    #sessionId = UserSessions.insert
-    #  drawing: false
-
-    #Session.set 'sessionId', sessionId
-
-    # TODO pick new word to draw when this runs out
-    # and assign a new person as the painter. Only
-    # get points by answering correctly
     intervalId = Meteor.setInterval ->
       Session.set 'time_remaining', (+ new Date()) - (Session.get('time') + 60.seconds)
     , 100
