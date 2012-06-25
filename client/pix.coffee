@@ -45,9 +45,6 @@ if Meteor.is_client
     canvas = $('canvas')
     context = canvas.get(0).getContext('2d')
 
-    context.fillStyle = '#ffffff'
-    context.fillRect(0, 0, canvas.attr('width'), canvas.attr('height'))
-
     Shapes.find().forEach (shape) ->
       context.fillStyle = shape.color
 
