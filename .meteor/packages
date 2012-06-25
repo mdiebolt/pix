@@ -7,5 +7,5 @@ autopublish
 coffeescript
 stylus
 jquery
-accounts
 accounts-ui
+accounts-google
