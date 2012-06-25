@@ -14,7 +14,7 @@
 <template name="header">
   <header>
     <h1 class='title'>{{title}}</h1>
-    {{#if currentUser}}
+    {{#if currentUser.drawing}}
       <button class='clear' {{disabled}}>Clear</button>
     {{/if}}
     {{> tools}}
@@ -30,7 +30,7 @@
 </template>
 
 <template name='palette'>
-  {{#if currentUser}}
+  {{#if currentUser.drawing}}
     <div class='palette'>
       {{{colors}}}
     </div>
@@ -38,7 +38,7 @@
 </template>
 
 <template name='tools'>
-  {{#if currentUser}}
+  {{#if currentUser.drawing}}
     <div class='tools'>
       {{{toolList}}}
     </div>
@@ -46,7 +46,7 @@
 </template>
 
 <template name='size'>
-  {{#if currentUser}}
+  {{#if currentUser.drawing}}
     <div class='size'>
       <label>
         <h4>Brush Size ({{brushSize}})</h4>
@@ -57,7 +57,7 @@
 </template>
 
 <template name='guesses'>
-  {{#unless currentUser}}
+  {{#unless currentUser.drawing}}
     <div class='guesses'>
       <h2>Type your guess below</h2>
       <input class='guess' type='text' placeholder='guess the word being drawn' />
