@@ -1,21 +1,11 @@
 Shapes = new Meteor.Collection 'shapes'
 UserSessions = new Meteor.Collection 'userSessions'
+Answers = new Meteor.Collection 'answers'
 
 if Meteor.is_client
-  words = [
-    'Cat'
-    'Dog'
-    'Bunny'
-    'Horse'
-    'Monkey'
-    'Cow'
-    'Chicken'
-  ]
-
   Session.set('color', 'black')
   Session.set('tool', 'circle')
   Session.set('size', 10)
-  Session.set('word', words.rand())
   Session.set('time', +new Date())
   Session.set('time_remaining', -60.seconds)
 
@@ -70,6 +60,10 @@ if Meteor.is_client
     redrawCanvas()
 
   Meteor.startup ->
+    setTimeout ->
+      Session.set('word', Answers.find().fetch().rand().word)
+    , 500
+
     $(document).on 'mouseup', (e) ->
       return if $(e.target).is('canvas')
 
