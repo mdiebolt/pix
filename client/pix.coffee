@@ -62,7 +62,7 @@ if Meteor.is_client
   Meteor.startup ->
     setTimeout ->
       Session.set('word', Answers.find().fetch().rand().word)
-    , 1000
+    , 2000
 
     $(document).on 'mouseup', (e) ->
       return if $(e.target).is('canvas')
