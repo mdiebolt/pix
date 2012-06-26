@@ -64,10 +64,12 @@
 </template>
 
 <template name='instructions'>
-  <div class='instructions'>
-    <h2>Draw a {{word}}</h2>
-    <span>Time Left: {{time}}</span>
-  </div>
+  {{#if drawing}}
+    <div class='instructions'>
+      <h2>Draw a {{word}}</h2>
+      <span>Time Left: {{time}}</span>
+    </div>
+  {{/if}}
 </template>
 
 <template name='players'>

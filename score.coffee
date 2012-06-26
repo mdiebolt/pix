@@ -21,6 +21,10 @@ Meteor.methods
         Answers.update {_id: newAnswerId}
           $set: active: true
 
+        Session.set('time_remaining', 60.seconds)
+
+        Shapes.remove {}
+
       Meteor.users.update {_id: userId}
         $set:
           score: user.score + points
