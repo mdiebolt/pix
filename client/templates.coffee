@@ -8,10 +8,13 @@ templateHelpers =
 
   'header disabled': ->
     if Shapes.find().count() > 0 then '' else 'disabled=disabled'
+
   'instructions time': ->
     (Session.get('time_remaining') / 1000).toFixed(1)
+
   'instructions word': ->
-    Session.get 'word'
+    Session.get('word')?.capitalize()
+
   'palette colors': ->
     [
       'red'
@@ -28,6 +31,7 @@ templateHelpers =
         memo += "<span class='active' style='background-color:#{Color(color).toHex()}'></span> "
       else
         memo += "<span style='background-color:#{Color(color).toHex()}'></span> "
+
   'players list': ->
     users = Meteor.users.find().fetch()
 
@@ -37,6 +41,7 @@ templateHelpers =
 
   'size brushSize': ->
     parseInt(Session.get('size'))
+
   'tools toolList': ->
     ['rectangle', 'circle'].inject '', (memo, tool) ->
       active = if tool is Session.get('tool') then 'active' else ''
@@ -92,6 +97,7 @@ templateEvents =
       return unless drawing()
 
       createShape(e)
+
   header:
     'click .toggle_draw': ->
       return unless (user = Meteor.user())
@@ -100,19 +106,23 @@ templateEvents =
         $set:
           drawing: if user then true else false
           score: user.score - 50
+        {multi: true}
 
     'click .clear': ->
       clear()
+
   palette:
     'click, touchstart span': (e) ->
       e.preventDefault()
 
       Session.set('color', $(e.currentTarget).css('background-color'))
+
   size:
     'change': (e) ->
       target = $(e.currentTarget)
 
       Session.set('size', target.val())
+
   tools:
     'click a': (e) ->
       e.preventDefault()

@@ -2,15 +2,15 @@ Shapes = new Meteor.Collection 'shapes'
 Answers = new Meteor.Collection 'answers'
 
 Meteor.startup ->
-  if Answers.find().count() is 0
+  if Answers.find().count() <= 1
     for word in [
-      'Cat'
-      'Dog'
-      'Bunny'
-      'Horse'
-      'Monkey'
-      'Cow'
-      'Chicken'
+      'cat'
+      'dog'
+      'bunny'
+      'horse'
+      'monkey'
+      'cow'
+      'chicken'
     ]
       Answers.insert
         word: word
