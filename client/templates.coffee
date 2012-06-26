@@ -13,7 +13,8 @@ templateHelpers =
     (Session.get('time_remaining') / 1000).toFixed(1)
 
   'instructions word': ->
-    Session.get('word')?.capitalize()
+    if answer = Answers.findOne {active: true}
+      answer.word.capitalize()
 
   'palette colors': ->
     [
@@ -97,6 +98,18 @@ templateEvents =
       return unless drawing()
 
       createShape(e)
+
+  guesses:
+    'keyup .guess': (e) ->
+      return if (target = $(e.currentTarget)).val() is ''
+      return unless (user = Meteor.user())
+
+      if e.keyCode is 13
+        Meteor.call('checkGuess', target.val(), user._id)
+
+        target.val ''
+
+        target.focus()
 
   header:
     'click .toggle_draw': ->
